@@ -5,11 +5,12 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
-        "OTEL_SERVICE_NAME": "MovieDev"
+        "OTEL_SERVICE_NAME": "MovieDev",
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://192.168.56.75:35153",
+        "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=CoreApp,deployment.environment=dev"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5263"
+      "applicationUrl": "http://192.168.56.1:5263"
     },
     "IIS Express": {
       "commandName": "IISExpress",

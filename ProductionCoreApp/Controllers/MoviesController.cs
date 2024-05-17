@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Confluent.Kafka;
 
 namespace ProductionCoreApp.Controllers
 {
@@ -10,7 +11,6 @@ namespace ProductionCoreApp.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly MovieContext _dbContext;
-
         public MoviesController(MovieContext dbContext)
         {
             _dbContext = dbContext;
@@ -20,13 +20,14 @@ namespace ProductionCoreApp.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
+
             if (_dbContext.Movies == null)
             {
                 return NotFound();
             }
             return await _dbContext.Movies.ToListAsync();
         }
-
+        
         // GET: api/Movies/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Movie>> GetMovie(int id)
@@ -58,6 +59,7 @@ namespace ProductionCoreApp.Controllers
         // PUT: api/Movies/5
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
+
         {
             if (id != movie.Id)
             {
@@ -108,6 +110,7 @@ namespace ProductionCoreApp.Controllers
 
         private bool MovieExists(long id)
         {
+
             return (_dbContext.Movies?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
