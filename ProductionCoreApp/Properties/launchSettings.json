@@ -6,8 +6,8 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "OTEL_SERVICE_NAME": "MovieDev",
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://192.168.56.75:35153",
-        "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=CoreApp,deployment.environment=dev"
+        "OTEL_EXPORTER_OTLP_ENDPOINT": "http://192.168.56.33:4317",
+        "OTEL_RESOURCE_ATTRIBUTES": "service.namespace=FMDQOnlineApp,deployment.environment=dev"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://192.168.56.1:5263"
@@ -16,6 +16,15 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "launchUrl": "swagger"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_URLS": "http://+:80"
+      },
+      "publishAllPorts": true
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",
