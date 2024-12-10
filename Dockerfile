@@ -8,16 +8,16 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["/ProductionCoreApp/ProductionCoreApp.csproj", "."]
-RUN dotnet restore "/ProductionCoreApp/ProductionCoreApp.csproj"
+RUN dotnet restore "./././ProductionCoreApp.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "/ProductionCoreApp/ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /ProductionCoreApp/build
+RUN dotnet build "./ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /ProductionCoreApp/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "/ProductionCoreApp/ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /ProductionCoreApp/publish /p:UseAppHost=false
+RUN dotnet publish "./ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /ProductionCoreApp/publish /p:UseAppHost=false
 
 FROM base AS final
-WORKDIR /app
+WORKDIR /ProductionCoreApp
 COPY --from=publish /ProductionCoreApp/publish .
 ENTRYPOINT ["dotnet", "/ProductionCoreApp/ProductionCoreApp.dll"]
