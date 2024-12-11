@@ -1,24 +1,11 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-USER app
+FROM mcr.microsoft.com/dotnet/sdk:6.0-alpine as build
 WORKDIR /app
 EXPOSE 8080
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["ProductionCoreApp/ProductionCoreApp.csproj", "ProductionCoreApp/"]
-RUN dotnet restore "./ProductionCoreApp/./ProductionCoreApp.csproj"
 COPY . .
-WORKDIR "/src/ProductionCoreApp"
-RUN dotnet build "./ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet restore
+RUN dotnet publish -o /app/published-app
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ProductionCoreApp.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine as runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ProductionCoreApp.dll"]
+COPY --from=build /app/published-app /app
+ENTRYPOINT [ "dotnet", "/app/ProductionCoreApp.dll" ]
