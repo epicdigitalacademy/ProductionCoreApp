@@ -1,0 +1,72 @@
+logging {
+	level = "info"
+}
+
+otelcol.receiver.otlp "default" {
+  grpc {}
+  http {}
+  
+  output {
+	logs    = [otelcol.exporter.loki.default.input]
+    traces  = [otelcol.exporter.otlp.default.input]
+	metrics = [otelcol.exporter.prometheus.default.input]
+  }
+}
+
+otelcol.receiver.prometheus "default" {
+  output {
+    metrics = [otelcol.exporter.prometheus.default.input]
+  }
+}
+
+otelcol.exporter.prometheus "default" {
+  forward_to = [prometheus.remote_write.prom.receiver]
+}
+
+prometheus.exporter.windows "default" { 
+   enabled_collectors = ["cpu","cs","logical_disk","net","os","service","system","process"]
+
+
+}
+
+// Configure a prometheus.scrape component to collect windows metrics.
+prometheus.scrape "default" {
+  targets    = prometheus.exporter.windows.default.targets
+  forward_to = [prometheus.remote_write.prom.receiver]
+}
+
+prometheus.remote_write "prom" {
+  endpoint {
+    url = "https://otelcollector.transactpay.ai:9090/api/v1/write"
+  }
+}
+
+
+otelcol.processor.batch "default" {
+  output {
+    metrics = [otelcol.exporter.prometheus.default.input]
+    logs    = [otelcol.exporter.loki.default.input]
+    traces  = [otelcol.exporter.otlp.default.input]
+  }
+}
+
+otelcol.exporter.otlp "default" {
+  client {
+    endpoint = "https://otelcollector.transactpay.ai:4317"
+	  tls { 
+	      insecure = false
+//		  insecure_skip_verify = true
+	  
+	  }
+  }
+}
+
+otelcol.exporter.loki "default" {
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "https://otelcollector.transactpay.ai:3100/loki/api/v1/push"
+  }
+}
